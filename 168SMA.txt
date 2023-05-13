@@ -1,0 +1,35 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © MonicaClaireW
+
+//@version=5
+indicator("168 Day/8 Month SMA Trend", overlay=true)
+
+// Create Indicator's
+SMA = ta.sma(close, 168)
+
+// Make a persistent label variable (so we can access the previous label)
+var label crossLabel = na
+
+// When a moving average signal happens, make a new label
+if ta.cross(close, SMA)
+    // Determine the label's price coordinate and colour
+    labelColour = color.green
+    labelY = yloc.belowbar
+    labelorient = label.style_label_up
+
+    if close < SMA
+        labelColour := color.red
+        labelY := yloc.abovebar
+        labelorient := label.style_label_down
+
+    // Make a new label at the price target
+    crossLabel := label.new(bar_index, high, 
+         text="SMA Cross", color=labelColour, textcolor=color.white)
+
+    // Move the old, previous label to above the bar (and remove its text)
+    label.set_yloc(crossLabel[1], yloc = labelY)
+    label.set_style(crossLabel[1], labelorient)
+    label.set_text(crossLabel[1], "")
+
+// Plot Moving Average's to chart
+plot(SMA)
